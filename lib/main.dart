@@ -133,8 +133,8 @@ class _DateTimePickerState extends State<DateTimePicker> {
 
           );
         }));
-    final bytes = pdf.save();
-    final blob = html.Blob([bytes], 'application/pdf');
+    //final bytes = pdf.save();
+    //final blob = html.Blob([bytes], 'application/pdf');
     return new Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -173,7 +173,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(color: Colors.grey[200]),
                   child: TextFormField(
-                    style: TextStyle(fontSize: 40),
+                    style: TextStyle(fontSize: 20),
                     textAlign: TextAlign.center,
                     enabled: false,
                     keyboardType: TextInputType.text,
@@ -211,7 +211,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(color: Colors.grey[200]),
                   child: TextFormField(
-                    style: TextStyle(fontSize: 40),
+                    style: TextStyle(fontSize: 20),
                     textAlign: TextAlign.center,
                     onSaved: ( val) {
                       _setTime = val!;
@@ -299,12 +299,15 @@ class _DateTimePickerState extends State<DateTimePicker> {
             ElevatedButton(
 
               onPressed: () async {
-                _activateList();
-                final bytes = await pdf.save();
-                final blob = html.Blob([bytes], 'application/pdf');
-                final url = html.Url.createObjectUrlFromBlob(blob);
-                html.window.open(url, '_blank');
-                html.Url.revokeObjectUrl(url);
+                 _activateList();
+
+                  final bytes = await pdf.save();
+                  final blob = html.Blob([bytes], 'application/pdf');
+                  final url = html.Url.createObjectUrlFromBlob(blob);
+                  html.window.open(url, '_blank');
+                  html.Url.revokeObjectUrl(url);
+
+
               },
               child: Text('Get List of Registered Attendees'),
             ),
