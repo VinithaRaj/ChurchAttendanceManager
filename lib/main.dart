@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TMC Subang Jaya Registration Management',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
 
         primarySwatch: Colors.blue,
@@ -49,6 +50,8 @@ class _DateTimePickerState extends State<DateTimePicker> {
         final nextNameService = Map.from(value);
         final currentDateService = nextNameService['date'];
         final currentDateTitle = nextNameService['title'];
+        currentLimit = nextNameService['limit'];
+        print("I am limit"+currentLimit);
         currentTitle = "Registration for "+currentDateTitle;
         currentDate = nextNameService['time'] + ', ' + nextNameService['date'];
         setState((){
@@ -67,6 +70,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
   var currentTitle;
   var currentDate;
   var currentChildname;
+  var currentLimit;
   var allnames = <String>[];
   final DatabaseReference ref2 = FirebaseDatabase.instance.reference();
   //String _setTime = 'test';
@@ -134,6 +138,21 @@ class _DateTimePickerState extends State<DateTimePicker> {
     return new Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          Container(
+              padding: EdgeInsets.all(20),
+              width: _width/1.8,
+
+              child:Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+
+                children: [
+                  ListTile(
+
+                    title: Text("Current Service: "+currentTitle),
+                    subtitle: Text("Current Date: "+currentDate+", Current Limit: "+currentLimit),
+
+                  )
+                ],)),
           Column(
             children: <Widget>[
               Text(
@@ -255,9 +274,20 @@ class _DateTimePickerState extends State<DateTimePicker> {
                     TextFormField(
                       //decoration: new InputDecoration(hintText: 'Eg. Sunday Service'),
                       maxLength: 64,
+                    validator: (val){
+
+                      if(int.tryParse(val!)==null){
+                      print(val!);
+
+                      return 'Only Numbers Allowed!';
+                      }
+                      return null;
+                      },
                       onSaved: (val){
                         limit = val!;
                       },
+
+
                     ))
               ]
 
@@ -278,7 +308,9 @@ class _DateTimePickerState extends State<DateTimePicker> {
               },
               child: Text('Get List of Registered Attendees'),
             ),
-          ],)
+          ],),
+
+
 
           /*ElevatedButton(onPressed: (){
             final url = html.Url.createObjectUrlFromBlob(blob);
@@ -353,6 +385,8 @@ class _DateTimePickerState extends State<DateTimePicker> {
         'title': name
       };
       ref2.child('details').push().set(data);
+      _activateList();
+      _key.currentState?.reset();
     };
   }
   _getList() {
@@ -367,7 +401,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Date time picker'),
+        title: Text('TMC Subang Jaya Attendance Management'),
       ),
       body: new SingleChildScrollView(
           child: Container(
