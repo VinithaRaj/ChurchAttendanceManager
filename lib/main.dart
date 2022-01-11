@@ -81,7 +81,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
   //String limit='samp';
 
   late String dateTime;
-  String doctext="Helloooo thereeee";
+  String doctext="No entries yet";
   DateTime selectedDate = DateTime.now();
 
   TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
@@ -94,7 +94,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
       int namecount = 1;
       StreamSubscription currentService = FirebaseDatabase.instance.reference().child(currentChildname).orderByChild("name").onValue.listen((event) {
         final curServicedata = new Map<String,dynamic>.from(event.snapshot.value);
-        doctext = "";
+        doctext = currentChildname+"\n";
         allnames=<String>[];
         final curServicedate = curServicedata.forEach((key, value)
         {
@@ -140,7 +140,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
         children: <Widget>[
           Container(
               padding: EdgeInsets.all(20),
-              width: _width/1.8,
+              width: _width/1.2,
 
               child:Column(
                 mainAxisAlignment: MainAxisAlignment.center,
