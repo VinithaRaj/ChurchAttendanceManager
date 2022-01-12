@@ -1,6 +1,6 @@
 {
-    "name": "attendance_church_management",
-    "short_name": "attendance_church_management",
+    "name": "TMC SJ Attendance Manager",
+    "short_name": "TMC SJ Attendance Manager",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

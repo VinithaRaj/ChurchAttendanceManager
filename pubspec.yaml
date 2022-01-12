@@ -43,6 +43,8 @@ dependencies:
   pdf:
   open_file:
   universal_html:
+  recase: ^4.0.0
+
 
 dev_dependencies:
   flutter_test:

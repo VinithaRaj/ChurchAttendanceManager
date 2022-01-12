@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:recase/recase.dart';
 import 'package:attendance_church_management/api/pdf_api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +47,13 @@ class _DateTimePickerState extends State<DateTimePicker> {
       final curServicedata = new Map<String,dynamic>.from(event.snapshot.value);
       final curServicedate = curServicedata.forEach((key, value)
       {
+        refid = key;
+        print("i am keyyy "+key);
         final nextNameService = Map.from(value);
         final currentDateService = nextNameService['date'];
         final currentDateTitle = nextNameService['title'];
         currentLimit = nextNameService['limit'];
+        collectResponses = nextNameService['collect'];
         print("I am limit"+currentLimit);
         currentTitle = "Registration for "+currentDateTitle;
         currentDate = nextNameService['time'] + ', ' + nextNameService['date'];
@@ -69,7 +72,9 @@ class _DateTimePickerState extends State<DateTimePicker> {
   GlobalKey<FormState> _key = new GlobalKey();
   var currentTitle;
   var currentDate;
+  var refid;
   var currentChildname;
+  bool collectResponses=true;
   var currentLimit;
   var allnames = <String>[];
   final DatabaseReference ref2 = FirebaseDatabase.instance.reference();
@@ -88,40 +93,45 @@ class _DateTimePickerState extends State<DateTimePicker> {
 
   TextEditingController _dateController = TextEditingController();
   TextEditingController _timeController = TextEditingController();
-  Widget FormUI(){
+  Widget FormUI() {
     final DatabaseReference ref2 = FirebaseDatabase.instance.reference();
-    if (currentChildname !=null){
+    if (currentChildname != null) {
       int namecount = 1;
-      StreamSubscription currentService = FirebaseDatabase.instance.reference().child(currentChildname).orderByChild("name").onValue.listen((event) {
-        final curServicedata = new Map<String,dynamic>.from(event.snapshot.value);
-        doctext = currentChildname+"\n";
-        allnames=<String>[];
-        final curServicedate = curServicedata.forEach((key, value)
-        {
+      StreamSubscription currentService = FirebaseDatabase.instance
+          .reference()
+          .child(currentChildname)
+          .orderByChild("name")
+          .onValue
+          .listen((event) {
+        final curServicedata = new Map<String, dynamic>.from(
+            event.snapshot.value);
+        doctext = currentTitle + " " + currentDate + "\n";
+        allnames = <String>[];
+        final curServicedate = curServicedata.forEach((key, value) {
           final namemap = Map.from(value);
           final eachname = namemap['name'];
-          allnames.add(eachname);
+          allnames.add(ReCase(eachname).titleCase);
 
 
-          print(currentTitle+" i am the title");
+          print(allnames.toString() + " i am the title");
         });
-
       });
-
-      allnames.sort((a,b)=>a.toString().compareTo(b.toString()));
+      print("hereee");
+      allnames.sort((a, b) => a.toString().compareTo(b.toString()));
       print(allnames);
       allnames.forEach((element) {
         print(doctext);
-
-        doctext+=namecount.toString()+". "+element+"\n";
+        print("i am doctext");
+        doctext += namecount.toString() + ". " + element + "\n";
         namecount++;
       });
-      print(doctext);
+      print(doctext+"i am doc");
+    //}
 
-
-    }
-
-    var lencount = ref2.child('new').onChildAdded.length;
+    var lencount = ref2
+        .child('new')
+        .onChildAdded
+        .length;
     print(lencount);
     final pdf = pw.Document();
     pdf.addPage(pw.Page(
@@ -140,19 +150,46 @@ class _DateTimePickerState extends State<DateTimePicker> {
         children: <Widget>[
           Container(
               padding: EdgeInsets.all(20),
-              width: _width/1.2,
+              width: _width / 1.2,
 
-              child:Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
 
                 children: [
                   ListTile(
 
-                    title: Text("Current Service: "+currentTitle),
-                    subtitle: Text("Current Date: "+currentDate+", Current Limit: "+currentLimit),
+                    title: Text("Current Service: " + currentTitle),
+                    subtitle: Text(
+                        "Current Date: " + currentDate + ", Current Limit: " +
+                            currentLimit),
 
                   )
                 ],)),
+          Container(
+              padding: EdgeInsets.all(20),
+              width: _width / 1.2,
+
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:<Widget>[
+                  Switch(value: collectResponses, onChanged:
+                      (value) {
+                    setState(()  {
+                      collectResponses = value;
+                      print(collectResponses);
+                      ref2.child("details").child(refid).update({'collect':collectResponses});
+
+
+
+                    });
+                    final test = FirebaseDatabase.instance.reference().child('details').limitToLast(1).reference();
+                    print(test.toString()+"i am reference");
+
+                  },
+                    activeTrackColor: Colors.lightGreenAccent,
+                    activeColor: Colors.green,)
+                ],
+)),
           Column(
             children: <Widget>[
               Text(
@@ -178,7 +215,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
                     enabled: false,
                     keyboardType: TextInputType.text,
                     controller: _dateController,
-                    onSaved: ( val) {
+                    onSaved: (val) {
                       _setDate = val!;
                     },
                     decoration: InputDecoration(
@@ -213,7 +250,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
                   child: TextFormField(
                     style: TextStyle(fontSize: 20),
                     textAlign: TextAlign.center,
-                    onSaved: ( val) {
+                    onSaved: (val) {
                       _setTime = val!;
                     },
                     enabled: false,
@@ -246,9 +283,10 @@ class _DateTimePickerState extends State<DateTimePicker> {
                     decoration: BoxDecoration(color: Colors.grey[200]),
                     child:
                     TextFormField(
-                      decoration: new InputDecoration(hintText: 'Eg. Sunday Service'),
+                      decoration: new InputDecoration(
+                          hintText: 'Eg. Sunday Service'),
                       maxLength: 64,
-                      onSaved: (val){
+                      onSaved: (val) {
                         name = val!;
                       },
                     ))
@@ -274,16 +312,15 @@ class _DateTimePickerState extends State<DateTimePicker> {
                     TextFormField(
                       //decoration: new InputDecoration(hintText: 'Eg. Sunday Service'),
                       maxLength: 64,
-                    validator: (val){
+                      validator: (val) {
+                        if (int.tryParse(val!) == null) {
+                          print(val!);
 
-                      if(int.tryParse(val!)==null){
-                      print(val!);
-
-                      return 'Only Numbers Allowed!';
-                      }
-                      return null;
+                          return 'Only Numbers Allowed!';
+                        }
+                        return null;
                       },
-                      onSaved: (val){
+                      onSaved: (val) {
                         limit = val!;
                       },
 
@@ -295,24 +332,25 @@ class _DateTimePickerState extends State<DateTimePicker> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-            ElevatedButton(onPressed: _sendToDB, child: const Text("Submit"),),
-            ElevatedButton(
+              ElevatedButton(
+                onPressed: _sendToDB, child: const Text("Submit"),),
+              ElevatedButton(
 
-              onPressed: () async {
-                 _activateList();
-
-                  final bytes = await pdf.save();
-                  final blob = html.Blob([bytes], 'application/pdf');
-                  final url = html.Url.createObjectUrlFromBlob(blob);
-                  html.window.open(url, '_blank');
-                  html.Url.revokeObjectUrl(url);
-
-
-              },
-              child: Text('Get List of Registered Attendees'),
-            ),
-          ],),
-
+                onPressed: () async {
+                  if (currentChildname != null) {
+                    final bytes = await pdf.save();
+                    final blob = html.Blob([bytes], 'application/pdf');
+                    final url = html.Url.createObjectUrlFromBlob(blob);
+                    html.window.open(url, '_blank');
+                    html.Url.revokeObjectUrl(url);
+                  }
+                  else {
+                    _activateList();
+                  }
+                },
+                child: Text('Get List of Registered Attendees'),
+              ),
+            ],),
 
 
           /*ElevatedButton(onPressed: (){
@@ -333,6 +371,10 @@ class _DateTimePickerState extends State<DateTimePicker> {
 
         ]
     );
+  }
+  else {
+    return LinearProgressIndicator();
+  }
   }
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -385,7 +427,8 @@ class _DateTimePickerState extends State<DateTimePicker> {
         'date': _setDate,
         'time': _setTime,
         'limit': limit,
-        'title': name
+        'title': name,
+        'collect':collectResponses,
       };
       ref2.child('details').push().set(data);
       _activateList();
