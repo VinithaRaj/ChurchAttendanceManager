@@ -117,14 +117,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
         });
       });
       print("hereee");
-      allnames.sort((a, b) => a.toString().compareTo(b.toString()));
-      print(allnames);
-      allnames.forEach((element) {
-        print(doctext);
-        print("i am doctext");
-        doctext += namecount.toString() + ". " + element + "\n";
-        namecount++;
-      });
+
       print(doctext+"i am doc");
     //}
 
@@ -133,16 +126,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
         .onChildAdded
         .length;
     print(lencount);
-    final pdf = pw.Document();
-    pdf.addPage(pw.Page(
-        pageFormat: PdfPageFormat.a4,
-        build: (pw.Context context) {
-          return pw.Container(
-            alignment: pw.Alignment.topLeft,
-            child: pw.Text(doctext),
 
-          );
-        }));
     //final bytes = pdf.save();
     //final blob = html.Blob([bytes], 'application/pdf');
     return new Column(
@@ -337,15 +321,42 @@ class _DateTimePickerState extends State<DateTimePicker> {
               ElevatedButton(
 
                 onPressed: () async {
+                  /*ref2.child(currentChildname).once().then((snapshot) {
+                    final namesjoint = new Map<String,dynamic>.from(snapshot.value);
+                    print(namesjoint);
+
+                  });*/
+
                   if (currentChildname != null) {
+                    namecount=1;
+                    allnames.sort((a, b) => a.toString().compareTo(b.toString()));
+                    print(allnames);
+                    allnames.forEach((element) {
+                      print(doctext);
+                      print("i am doctext");
+                      doctext += namecount.toString() + ". " + element + "\n";
+                      namecount++;
+                    });
+                    final pdf = pw.Document();
+                    pdf.addPage(pw.Page(
+                        pageFormat: PdfPageFormat.a4,
+                        build: (pw.Context context) {
+                          return pw.Container(
+                            alignment: pw.Alignment.topLeft,
+                            child: pw.Text(doctext),
+
+                          );
+                        }));
                     final bytes = await pdf.save();
                     final blob = html.Blob([bytes], 'application/pdf');
                     final url = html.Url.createObjectUrlFromBlob(blob);
                     html.window.open(url, '_blank');
                     html.Url.revokeObjectUrl(url);
+
+
                   }
                   else {
-                    _activateList();
+                    print("loosupayele");
                   }
                 },
                 child: Text('Get List of Registered Attendees'),
