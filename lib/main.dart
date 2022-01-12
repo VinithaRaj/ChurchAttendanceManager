@@ -86,7 +86,8 @@ class _DateTimePickerState extends State<DateTimePicker> {
   //String limit='samp';
 
   late String dateTime;
-  String doctext="No entries yet";
+  //String doctext="No entries yet";
+  var doctext = "No entries yet";
   DateTime selectedDate = DateTime.now();
 
   TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
@@ -118,7 +119,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
       });
       print("hereee");
 
-      print(doctext+"i am doc");
+      //print(doctext+"i am doc");
     //}
 
     var lencount = ref2
@@ -329,24 +330,36 @@ class _DateTimePickerState extends State<DateTimePicker> {
 
                   if (currentChildname != null) {
                     namecount=1;
+                    var newnames = <pw.Widget>[];
                     allnames.sort((a, b) => a.toString().compareTo(b.toString()));
                     print(allnames);
+                    allnames = allnames.toSet().toList();
                     allnames.forEach((element) {
-                      print(doctext);
-                      print("i am doctext");
+                      //print(doctext);
+                      //print("i am doctext");
                       doctext += namecount.toString() + ". " + element + "\n";
+                      newnames.add(pw.Text(namecount.toString() + ". " + element + "\n"));
                       namecount++;
                     });
                     final pdf = pw.Document();
-                    pdf.addPage(pw.Page(
+                    pdf.addPage(pw.MultiPage(build: (pw.Context context) => newnames));
+
+
+
+                    /*pdf.addPage(pw.Page(
                         pageFormat: PdfPageFormat.a4,
                         build: (pw.Context context) {
+
+                          //return pdf.save();
                           return pw.Container(
                             alignment: pw.Alignment.topLeft,
                             child: pw.Text(doctext),
-
                           );
-                        }));
+                        }
+                        //  ]
+                        )
+                    );*/
+
                     final bytes = await pdf.save();
                     final blob = html.Blob([bytes], 'application/pdf');
                     final url = html.Url.createObjectUrlFromBlob(blob);
