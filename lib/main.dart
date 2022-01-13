@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/painting.dart';
 import 'package:recase/recase.dart';
 import 'package:attendance_church_management/api/pdf_api.dart';
 import 'package:flutter/cupertino.dart';
@@ -134,8 +135,8 @@ class _DateTimePickerState extends State<DateTimePicker> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
-              padding: EdgeInsets.all(20),
-              width: _width / 1.2,
+              padding: EdgeInsets.all(10),
+              width: _width ,
 
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -143,10 +144,10 @@ class _DateTimePickerState extends State<DateTimePicker> {
                 children: [
                   ListTile(
 
-                    title: Text("Current Service: " + currentTitle),
+                    title: Text("Current Service: " + currentTitle,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
                     subtitle: Text(
                         "Current Date: " + currentDate + ", Current Limit: " +
-                            currentLimit),
+                            currentLimit,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16)),
 
                   )
                 ],)),
@@ -457,6 +458,26 @@ class _DateTimePickerState extends State<DateTimePicker> {
       ref2.child('details').push().set(data);
       _activateList();
       _key.currentState?.reset();
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text("Registration Set For"),
+          content: Column(children:[Text('Date:'+ _setDate),
+            Text('Time: '+ _setTime),
+            Text('Limit: '+ limit),
+            Text('Title: '+ name),]),
+
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: Text("Okay!"),
+            ),
+          ],
+        ),
+
+      );
     };
   }
   _getList() {
